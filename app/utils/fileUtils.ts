@@ -123,16 +123,36 @@ ${files[filePath].content}
 export interface UrlFileLoadConfig {
   fileLoadRoot: string;
   files: string[];
+  auth?: {
+    token: string,
+    role: string,
+    database: string
+  }
 }
 
 export const loadFilesFromUrls = async (config: UrlFileLoadConfig): Promise<{ [path: string]: { content: string } }> => {
+ 
   const files: { [path: string]: { content: string } } = {};
 
   await Promise.all(
     config.files.map(async (filePath) => {
       try {
         const url = new URL(filePath, config.fileLoadRoot).toString();
-        const response = await fetch(url);
+        
+        let response;
+        if (url.includes('/virutosoconductornet/boltapi/')) {
+          // Get data from yardi api
+          response = await fetch(url, {
+            headers: {
+              'Authorization': `Bearer ${config.auth.token}`,
+              'Role': config.auth.role,
+              'Database': config.auth.database
+            }
+          });          
+        } else {
+          // Do normal fetch
+          response = await fetch(url);
+        }
         
         if (!response.ok) {
           throw new Error(`Failed to fetch ${url}: ${response.statusText}`);

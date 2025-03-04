@@ -1,3 +1,4 @@
+import { type ActionFunctionArgs } from '@remix-run/cloudflare';
 import { json, type LoaderFunctionArgs, type MetaFunction } from '@remix-run/cloudflare';
 import { ClientOnly } from 'remix-utils/client-only';
 import { BaseChat } from '~/components/chat/BaseChat';
@@ -6,6 +7,7 @@ import { Header } from '~/components/header/Header';
 import BackgroundRays from '~/components/ui/BackgroundRays';
 import { loadFilesFromUrls, type UrlFileLoadConfig } from '~/utils/fileUtils';
 import { useLoaderData } from '@remix-run/react';
+import { parseCookies } from '~/lib/api/cookies';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'Bolt' }, { name: 'description', content: 'Talk with Bolt, an AI assistant from StackBlitz' }];
@@ -16,10 +18,18 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const files = url.searchParams.get('files')?.split(',').filter(Boolean);
   const fileLoadRoot = process.env.FILELOADROOT;
 
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = parseCookies(cookieHeader);
+
   if (fileLoadRoot && files?.length) {
     const config: UrlFileLoadConfig = {
       fileLoadRoot,
       files,
+      auth: {
+        token: cookie.yardi_token,
+        role: cookie.yardi_role,
+        database: cookie.yardi_database
+      }
     };
 
     try {

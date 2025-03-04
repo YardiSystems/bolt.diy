@@ -62,14 +62,22 @@ export function Chat({ initialLoadedFiles }: { initialLoadedFiles?: { [path: str
       };
       
       // Add the message to the chat history
-      storeMessageHistory([...initialMessages, artifactMessage]).catch((error) => {
+      storeMessageHistory([...initialMessages, artifactMessage])
+      .then(() => {
+        // Reload to show file in chat message
+        location.reload();
+      })
+      .catch((error) => {
         console.error('Error storing URL loaded files:', error);
       });
+      
+
     }
   }, [initialMessages, initialLoadedFiles]);
 
   return (
     <>
+      <h1>Hello Chat {ready ? 'Ready' : 'NOT READY'}</h1>
       {ready && (
         <ChatImpl
           description={title}
