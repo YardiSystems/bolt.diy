@@ -119,3 +119,32 @@ ${files[filePath].content}
 </boltArtifact>
   `;
 };
+
+export interface UrlFileLoadConfig {
+  fileLoadRoot: string;
+  files: string[];
+}
+
+export const loadFilesFromUrls = async (config: UrlFileLoadConfig): Promise<{ [path: string]: { content: string } }> => {
+  const files: { [path: string]: { content: string } } = {};
+
+  await Promise.all(
+    config.files.map(async (filePath) => {
+      try {
+        const url = new URL(filePath, config.fileLoadRoot).toString();
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+        }
+
+        const content = await response.text();
+        files[filePath] = { content };
+      } catch (error) {
+        console.error(`Error loading file ${filePath}:`, error);
+      }
+    })
+  );
+
+  return files;
+};

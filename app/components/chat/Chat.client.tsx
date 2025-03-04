@@ -34,14 +34,39 @@ const toastAnimation = cssTransition({
 
 const logger = createScopedLogger('Chat');
 
-export function Chat() {
+interface ChatProps {
+  initialMessages: Message[];
+  storeMessageHistory: (messages: Message[]) => Promise<void>;
+  importChat: (description: string, messages: Message[]) => Promise<void>;
+  exportChat: () => void;
+  description?: string;
+  initialLoadedFiles?: { [path: string]: { content: string } } | null;
+}
+
+export function Chat({ initialLoadedFiles }: { initialLoadedFiles?: { [path: string]: { content: string } } | null }) {
   renderLogger.trace('Chat');
 
   const { ready, initialMessages, storeMessageHistory, importChat, exportChat } = useChatHistory();
   const title = useStore(description);
+  
   useEffect(() => {
     workbenchStore.setReloadedMessages(initialMessages.map((m) => m.id));
-  }, [initialMessages]);
+    
+    // If we have initial loaded files, create an artifact message
+    if (initialLoadedFiles) {
+      const artifactMessage: Message = {
+        role: 'assistant',
+        content: filesToArtifacts(initialLoadedFiles, 'url-loaded-files'),
+        id: Math.random().toString(36).substring(2, 15),
+        createdAt: new Date(),
+      };
+      
+      // Add the message to the chat history
+      storeMessageHistory([...initialMessages, artifactMessage]).catch((error) => {
+        console.error('Error storing URL loaded files:', error);
+      });
+    }
+  }, [initialMessages, initialLoadedFiles]);
 
   return (
     <>
@@ -49,36 +74,23 @@ export function Chat() {
         <ChatImpl
           description={title}
           initialMessages={initialMessages}
-          exportChat={exportChat}
           storeMessageHistory={storeMessageHistory}
           importChat={importChat}
+          exportChat={exportChat}
+          initialLoadedFiles={initialLoadedFiles}
         />
       )}
       <ToastContainer
-        closeButton={({ closeToast }) => {
-          return (
-            <button className="Toastify__close-button" onClick={closeToast}>
-              <div className="i-ph:x text-lg" />
-            </button>
-          );
-        }}
-        icon={({ type }) => {
-          /**
-           * @todo Handle more types if we need them. This may require extra color palettes.
-           */
-          switch (type) {
-            case 'success': {
-              return <div className="i-ph:check-bold text-bolt-elements-icon-success text-2xl" />;
-            }
-            case 'error': {
-              return <div className="i-ph:warning-circle-bold text-bolt-elements-icon-error text-2xl" />;
-            }
-          }
-
-          return undefined;
-        }}
         position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
         pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
         transition={toastAnimation}
       />
     </>
@@ -103,16 +115,8 @@ const processSampledMessages = createSampler(
   50,
 );
 
-interface ChatProps {
-  initialMessages: Message[];
-  storeMessageHistory: (messages: Message[]) => Promise<void>;
-  importChat: (description: string, messages: Message[]) => Promise<void>;
-  exportChat: () => void;
-  description?: string;
-}
-
 export const ChatImpl = memo(
-  ({ description, initialMessages, storeMessageHistory, importChat, exportChat }: ChatProps) => {
+  ({ description, initialMessages, storeMessageHistory, importChat, exportChat, initialLoadedFiles }: ChatProps) => {
     useShortcuts();
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
