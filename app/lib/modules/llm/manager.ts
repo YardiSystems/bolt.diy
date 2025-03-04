@@ -198,6 +198,15 @@ export class LLMManager {
   }
 
   getDefaultProvider(): BaseProvider {
+    // Check environment variable first
+    const defaultProviderName = this._env?.DEFAULT_LLM_PROVIDER || 'Anthropic';
+    const provider = this._providers.get(defaultProviderName);
+
+    if (provider) {
+      return provider;
+    }
+
+    // Fallback to first provider if specified provider not found
     const firstProvider = this._providers.values().next().value;
 
     if (!firstProvider) {
@@ -205,5 +214,9 @@ export class LLMManager {
     }
 
     return firstProvider;
+  }
+
+  getDefaultModel(): string {
+    return this._env?.DEFAULT_LLM_MODEL || 'claude-3-5-sonnet-latest';
   }
 }

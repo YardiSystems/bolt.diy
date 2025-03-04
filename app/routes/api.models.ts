@@ -8,10 +8,12 @@ interface ModelsResponse {
   modelList: ModelInfo[];
   providers: ProviderInfo[];
   defaultProvider: ProviderInfo;
+  defaultModel: string;
 }
 
 let cachedProviders: ProviderInfo[] | null = null;
 let cachedDefaultProvider: ProviderInfo | null = null;
+let cachedDefaultModel: string | null = null;
 
 function getProviderInfo(llmManager: LLMManager) {
   if (!cachedProviders) {
@@ -35,7 +37,15 @@ function getProviderInfo(llmManager: LLMManager) {
     };
   }
 
-  return { providers: cachedProviders, defaultProvider: cachedDefaultProvider };
+  if (!cachedDefaultModel) {
+    cachedDefaultModel = llmManager.getDefaultModel();
+  }
+
+  return { 
+    providers: cachedProviders, 
+    defaultProvider: cachedDefaultProvider,
+    defaultModel: cachedDefaultModel,
+  };
 }
 
 export async function loader({
@@ -58,7 +68,7 @@ export async function loader({
   const apiKeys = getApiKeysFromCookie(cookieHeader);
   const providerSettings = getProviderSettingsFromCookie(cookieHeader);
 
-  const { providers, defaultProvider } = getProviderInfo(llmManager);
+  const { providers, defaultProvider, defaultModel } = getProviderInfo(llmManager);
 
   let modelList: ModelInfo[] = [];
 
@@ -86,5 +96,6 @@ export async function loader({
     modelList,
     providers,
     defaultProvider,
+    defaultModel: defaultModel,
   });
 }

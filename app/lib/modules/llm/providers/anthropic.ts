@@ -46,7 +46,7 @@ export default class AnthropicProvider extends BaseProvider {
       providerSettings: settings,
       serverEnv: serverEnv as any,
       defaultBaseUrlKey: '',
-      defaultApiTokenKey: 'OPENAI_API_KEY',
+      defaultApiTokenKey: 'ANTHROPIC_API_KEY',
     });
 
     if (!apiKey) {
@@ -61,6 +61,16 @@ export default class AnthropicProvider extends BaseProvider {
     });
 
     const res = (await response.json()) as any;
+    
+    if (!response.ok) {
+      throw new Error(`Anthropic API error: ${res.error?.message || 'Unknown error'}`);
+    }
+
+    if (!res.data || !Array.isArray(res.data)) {
+      console.error('Unexpected Anthropic API response:', res);
+      return [];
+    }
+
     const staticModelIds = this.staticModels.map((m) => m.name);
 
     const data = res.data.filter((model: any) => model.type === 'model' && !staticModelIds.includes(model.id));
