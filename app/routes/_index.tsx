@@ -13,8 +13,8 @@ export const meta: MetaFunction = () => {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
-  const fileLoadRoot = url.searchParams.get('fileloadroot');
   const files = url.searchParams.get('files')?.split(',').filter(Boolean);
+  const fileLoadRoot = process.env.FILELOADROOT;
 
   if (fileLoadRoot && files?.length) {
     const config: UrlFileLoadConfig = {

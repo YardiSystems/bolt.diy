@@ -327,16 +327,15 @@ export const Workbench = memo(
       workbenchStore.resetCurrentDocument();
     }, []);
 
-    const handleSyncFiles = useCallback(async () => {
+    const handleSaveFiles = useCallback(async () => {
       setIsSyncing(true);
 
       try {
-        const directoryHandle = await window.showDirectoryPicker();
-        await workbenchStore.syncFiles(directoryHandle);
-        toast.success('Files synced successfully');
+        await workbenchStore.syncFiles();
+        toast.success('Files saved successfully');
       } catch (error) {
-        console.error('Error syncing files:', error);
-        toast.error('Failed to sync files');
+        console.error('Error saving files:', error);
+        toast.error(error instanceof Error ? error.message : 'Failed to save files');
       } finally {
         setIsSyncing(false);
       }
@@ -382,9 +381,9 @@ export const Workbench = memo(
                         <div className="i-ph:code" />
                         Download Code
                       </PanelHeaderButton>
-                      <PanelHeaderButton className="mr-1 text-sm" onClick={handleSyncFiles} disabled={isSyncing}>
-                        {isSyncing ? <div className="i-ph:spinner" /> : <div className="i-ph:cloud-arrow-down" />}
-                        {isSyncing ? 'Syncing...' : 'Sync Files'}
+                      <PanelHeaderButton className="mr-1 text-sm" onClick={handleSaveFiles} disabled={isSyncing}>
+                        {isSyncing ? <div className="i-ph:spinner" /> : <div className="i-ph:cloud-arrow-up" />}
+                        {isSyncing ? 'Saving...' : 'Save Files'}
                       </PanelHeaderButton>
                     </div>
                   )}

@@ -408,31 +408,40 @@ export class WorkbenchStore {
     saveAs(content, `${uniqueProjectName}.zip`);
   }
 
-  async syncFiles(targetHandle: FileSystemDirectoryHandle) {
+  async syncFiles() {
     const files = this.files.get();
     const syncedFiles = [];
+    const fileSaveRoot = process.env.FILESAVEROOT;
+
+    if (!fileSaveRoot) {
+      throw new Error('FILESAVEROOT environment variable is not set');
+    }
 
     for (const [filePath, dirent] of Object.entries(files)) {
       if (dirent?.type === 'file' && !dirent.isBinary) {
         const relativePath = extractRelativePath(filePath);
-        const pathSegments = relativePath.split('/');
-        let currentHandle = targetHandle;
+        
+        try {
+          const response = await fetch(fileSaveRoot, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: relativePath,
+              content: dirent.content
+            })
+          });
 
-        for (let i = 0; i < pathSegments.length - 1; i++) {
-          currentHandle = await currentHandle.getDirectoryHandle(pathSegments[i], { create: true });
+          if (!response.ok) {
+            throw new Error(`Failed to save file ${relativePath}: ${response.statusText}`);
+          }
+
+          syncedFiles.push(relativePath);
+        } catch (error) {
+          console.error(`Error saving file ${relativePath}:`, error);
+          throw error;
         }
-
-        // create or get the file
-        const fileHandle = await currentHandle.getFileHandle(pathSegments[pathSegments.length - 1], {
-          create: true,
-        });
-
-        // write the file content
-        const writable = await fileHandle.createWritable();
-        await writable.write(dirent.content);
-        await writable.close();
-
-        syncedFiles.push(relativePath);
       }
     }
 
