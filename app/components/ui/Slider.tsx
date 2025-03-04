@@ -6,8 +6,7 @@ import { genericMemo } from '~/utils/react';
 
 export type SliderOptions<T> = {
   left: { value: T; text: string };
-  middle?: { value: T; text: string };
-  right: { value: T; text: string };
+  middle?: { value: T; text: string }
 };
 
 interface SliderProps<T> {
@@ -32,13 +31,6 @@ export const Slider = genericMemo(<T,>({ selected, options, setSelected }: Slide
           {options.middle.text}
         </SliderButton>
       )}
-
-      <SliderButton
-        selected={!isLeftSelected && !isMiddleSelected}
-        setSelected={() => setSelected?.(options.right.value)}
-      >
-        {options.right.text}
-      </SliderButton>
     </div>
   );
 });

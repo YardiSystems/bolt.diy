@@ -45,11 +45,7 @@ const sliderOptions: SliderOptions<WorkbenchViewType> = {
   middle: {
     value: 'diff',
     text: 'Diff',
-  },
-  right: {
-    value: 'preview',
-    text: 'Preview',
-  },
+  }
 };
 
 const workbenchVariants = {
@@ -389,19 +385,6 @@ export const Workbench = memo(
                       <PanelHeaderButton className="mr-1 text-sm" onClick={handleSyncFiles} disabled={isSyncing}>
                         {isSyncing ? <div className="i-ph:spinner" /> : <div className="i-ph:cloud-arrow-down" />}
                         {isSyncing ? 'Syncing...' : 'Sync Files'}
-                      </PanelHeaderButton>
-                      <PanelHeaderButton
-                        className="mr-1 text-sm"
-                        onClick={() => {
-                          workbenchStore.toggleTerminal(!workbenchStore.showTerminal.get());
-                        }}
-                      >
-                        <div className="i-ph:terminal" />
-                        Toggle Terminal
-                      </PanelHeaderButton>
-                      <PanelHeaderButton className="mr-1 text-sm" onClick={() => setIsPushDialogOpen(true)}>
-                        <div className="i-ph:git-branch" />
-                        Push to GitHub
                       </PanelHeaderButton>
                     </div>
                   )}

@@ -130,7 +130,6 @@ export const EditorPanel = memo(
           </PanelGroup>
         </Panel>
         <PanelResizeHandle />
-        <TerminalTabs />
       </PanelGroup>
     );
   },
