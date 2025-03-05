@@ -79,17 +79,23 @@ export async function selectContext(props: {
   const { codeContext } = extractCurrentContext(processedMessages);
 
   let filePaths = getFilePaths(files || {});
+  
   filePaths = filePaths.filter((x) => {
     const relPath = x.replace('/home/project/', '');
     return !ig.ignores(relPath);
   });
 
+  logger.info({filePaths});
+  
   let context = '';
   const currrentFiles: string[] = [];
   const contextFiles: FileMap = {};
 
   if (codeContext?.type === 'codeContext') {
     const codeContextFiles: string[] = codeContext.files;
+    
+    logger.info({codeContextFiles});
+    
     Object.keys(files || {}).forEach((path) => {
       let relativePath = path;
 
@@ -196,6 +202,9 @@ export async function selectContext(props: {
   excludeFiles.forEach((path) => {
     delete contextFiles[path];
   });
+  
+  logger.info({includeFiles});
+  
   includeFiles.forEach((path) => {
     let fullPath = path;
 

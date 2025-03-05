@@ -180,7 +180,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
         }
 
         setIsModelLoading('all');
-        fetch('/api/models')
+        fetch('/virutosoconductornet/bolt/api/models')
           .then((response) => response.json())
           .then((data) => {
             const typedData = data as { modelList: ModelInfo[] };

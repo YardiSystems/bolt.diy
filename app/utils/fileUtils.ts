@@ -133,7 +133,7 @@ export interface UrlFileLoadConfig {
 export const loadFilesFromUrls = async (config: UrlFileLoadConfig): Promise<{ [path: string]: { content: string } }> => {
  
   const files: { [path: string]: { content: string } } = {};
-
+ 
   await Promise.all(
     config.files.map(async (filePath) => {
       try {

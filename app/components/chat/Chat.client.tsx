@@ -44,6 +44,7 @@ interface ChatProps {
 }
 
 export function Chat({ initialLoadedFiles }: { initialLoadedFiles?: { [path: string]: { content: string } } | null }) {
+  
   renderLogger.trace('Chat');
 
   const { ready, initialMessages, storeMessageHistory, importChat, exportChat } = useChatHistory();
@@ -77,7 +78,6 @@ export function Chat({ initialLoadedFiles }: { initialLoadedFiles?: { [path: str
 
   return (
     <>
-      <h1>Hello Chat {ready ? 'Ready' : 'NOT READY'}</h1>
       {ready && (
         <ChatImpl
           description={title}
@@ -166,7 +166,7 @@ export const ChatImpl = memo(
       data: chatData,
       setData,
     } = useChat({
-      api: '/api/chat',
+      api: '/virutosoconductornet/bolt/api/chat',
       body: {
         apiKeys,
         files,
