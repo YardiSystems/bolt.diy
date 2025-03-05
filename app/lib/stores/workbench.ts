@@ -409,6 +409,7 @@ export class WorkbenchStore {
   }
 
   async syncFiles() {
+    console.log("Sync file")
     const files = this.files.get();
     const syncedFiles = [];
     const fileSaveRoot = import.meta.env.VITE_FILESAVEROOT;
@@ -422,11 +423,33 @@ export class WorkbenchStore {
         const relativePath = extractRelativePath(filePath);
         
         try {
+          let headers = new Headers({
+            'Content-Type': 'application/json'
+          });
+  
+          
+          const role = window.localStorage.getItem("ls.role") || undefined;
+          const database = window.localStorage.getItem("ls.database") || undefined;
+          const authDataStr = window.localStorage.getItem("ls.authorizationData");
+          if (authDataStr) {
+            const authData = JSON.parse(authDataStr)
+            const token = authData.token;
+            if(token) {
+              headers.append('Authorization', 'Bearer ' + token);
+            }
+          }
+
+          if (role) {
+            headers.append('role', JSON.parse(role));
+          }
+  
+          if (database) {
+            headers.append('database', JSON.parse(database));
+          }          
+          
           const response = await fetch(fileSaveRoot, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: headers,
             body: JSON.stringify({
               name: relativePath,
               content: dirent.content
