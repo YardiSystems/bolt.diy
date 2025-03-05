@@ -108,14 +108,14 @@ export const filesToArtifacts = (files: { [path: string]: { content: string } },
   return `
 <boltArtifact id="${id}" title="User Updated Files">
 ${Object.keys(files)
-  .map(
-    (filePath) => `
+      .map(
+        (filePath) => `
 <boltAction type="file" filePath="${filePath}">
 ${files[filePath].content}
 </boltAction>
 `,
-  )
-  .join('\n')}
+      )
+      .join('\n')}
 </boltArtifact>
   `;
 };
@@ -131,9 +131,31 @@ export const loadFilesFromUrls = async (config: UrlFileLoadConfig): Promise<{ [p
   await Promise.all(
     config.files.map(async (filePath) => {
       try {
+        const role = window.localStorage.getItem("ls.role") || undefined;
+        const database = window.localStorage.getItem("ls.database") || undefined;
+        const token = (window.localStorage.getItem("ls.ls.authorizationData") as any).token;
+
         const url = new URL(filePath, config.fileLoadRoot).toString();
-        const response = await fetch(url);
-        
+        const headers = new Headers({
+          'Content-Type': 'application/json'
+        });
+
+        if(token) {
+          headers.append('Authorization', 'Bearer ' + token);
+        }
+
+        if (role) {
+          headers.append('role', role);
+        }
+
+        if (database) {
+          headers.append('database', database);
+        }
+
+        const response = await fetch(url, {
+          headers: headers,
+        });
+
         if (!response.ok) {
           throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
         }

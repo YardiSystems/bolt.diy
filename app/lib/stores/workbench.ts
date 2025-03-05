@@ -420,13 +420,32 @@ export class WorkbenchStore {
     for (const [filePath, dirent] of Object.entries(files)) {
       if (dirent?.type === 'file' && !dirent.isBinary) {
         const relativePath = extractRelativePath(filePath);
-        
+
         try {
+
+          const role = window.localStorage.getItem("ls.role") || undefined;
+          const database = window.localStorage.getItem("ls.database") || undefined;
+          const token = (window.localStorage.getItem("ls.ls.authorizationData") as any).token;
+
+          const headers = new Headers({
+            'Content-Type': 'application/json'
+          });
+  
+          if(token) {
+            headers.append('Authorization', 'Bearer ' + token);
+          }
+
+          if (role) {
+            headers.append('role', role);
+          }
+  
+          if (database) {
+            headers.append('database', database);
+          }
+
           const response = await fetch(fileSaveRoot, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: headers,
             body: JSON.stringify({
               name: relativePath,
               content: dirent.content
