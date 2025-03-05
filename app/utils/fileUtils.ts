@@ -137,22 +137,32 @@ export const loadFilesFromUrls = async (config: UrlFileLoadConfig): Promise<{ [p
   await Promise.all(
     config.files.map(async (filePath) => {
       try {
-        const role = window.localStorage.getItem("ls.role") || undefined;
-        const database = window.localStorage.getItem("ls.database") || undefined;
-        const token = (window.localStorage.getItem("ls.ls.authorizationData") as any).token;
-
         const url = new URL(filePath, config.fileLoadRoot).toString();
         
         let response;
         if (url.includes('/virutosoconductornet/boltapi/')) {
-          // Get data from yardi api
+          
+          // Get data from yardi api  
+          const headers = new Headers({
+            'Content-Type': 'application/json'
+          });
+  
+          if (config.auth?.token) {
+            headers.append('Authorization', 'Bearer ' + config.auth?.token);
+          }
+
+          if (config.auth?.role) {
+            headers.append('role', config.auth?.role);
+          }
+  
+          if (config.auth?.database) {
+            headers.append('database', config.auth?.database);
+          }
+  
           response = await fetch(url, {
-            headers: {
-              'Authorization': `Bearer ${config.auth.token}`,
-              'Role': config.auth.role,
-              'Database': config.auth.database
-            }
-          });          
+            headers: headers,
+          });
+  
         } else {
           // Do normal fetch
           response = await fetch(url);
