@@ -136,7 +136,7 @@ export function useChatHistory() {
 
       try {
         const newId = await duplicateChat(db, mixedId || listItemId);
-        navigate(`/chat/${newId}`);
+        navigate(`/virutosoconductornet/bolt/chat/${newId}`);
         toast.success('Chat duplicated successfully');
       } catch (error) {
         toast.error('Failed to duplicate chat');
@@ -150,7 +150,7 @@ export function useChatHistory() {
 
       try {
         const newId = await createChatFromMessages(db, description, messages, metadata);
-        window.location.href = `/chat/${newId}`;
+        window.location.href = `/virutosoconductornet/bolt/chat/${newId}`;
         toast.success('Chat imported successfully');
       } catch (error) {
         if (error instanceof Error) {
@@ -189,10 +189,10 @@ function navigateChat(nextId: string) {
   /**
    * FIXME: Using the intended navigate function causes a rerender for <Chat /> that breaks the app.
    *
-   * `navigate(`/chat/${nextId}`, { replace: true });`
+   * `navigate(`/virutosoconductornet/bolt/chat/${nextId}`, { replace: true });`
    */
   const url = new URL(window.location.href);
-  url.pathname = `/chat/${nextId}`;
+  url.pathname = `/virutosoconductornet/bolt/chat/${nextId}`;
 
   window.history.replaceState({}, '', url);
 }

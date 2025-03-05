@@ -73,6 +73,7 @@ const gitInfo = getGitInfo();
 
 export default defineConfig((config) => {
   return {
+    base: '/virutosoconductornet/bolt/',
     define: {
       __COMMIT_HASH: JSON.stringify(gitInfo.commitHash),
       __GIT_BRANCH: JSON.stringify(gitInfo.branch),
@@ -99,6 +100,7 @@ export default defineConfig((config) => {
       }),
       config.mode !== 'test' && remixCloudflareDevProxy(),
       remixVitePlugin({
+        basename: '/virutosoconductornet/bolt/',
         future: {
           v3_fetcherPersist: true,
           v3_relativeSplatPath: true,

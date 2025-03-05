@@ -54,12 +54,58 @@ const inlineThemeCode = stripIndents`
   }
 `;
 
+const setAuthDataToCookie = stripIndents`
+  function setCookie(name,value,days) {
+      var expires = "";
+      if (days) {
+          var date = new Date();
+          date.setTime(date.getTime() + (days*24*60*60*1000));
+          expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+  }
+  function getCookie(name) {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for(var i=0;i < ca.length;i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+  }
+
+  const token = getCookie('yardi_token');
+  if (!token) {
+    const authDataStr = localStorage.getItem('ls.authorizationData');
+
+    if (authDataStr) {
+      const authData = JSON.parse(authDataStr);
+      setCookie('yardi_token', authData.token);
+
+      const roleStr = localStorage.getItem('ls.role');
+      if (roleStr) {
+        setCookie('yardi_role', JSON.parse(roleStr));
+      }
+
+      const databaseStr = localStorage.getItem('ls.database');
+      if (databaseStr) {
+        setCookie('yardi_database', JSON.parse(databaseStr));
+      }
+
+      location.reload();
+    }
+  }
+`;
+
+
 export const Head = createHead(() => (
   <>
     <meta charSet="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <Meta />
     <Links />
+    <script dangerouslySetInnerHTML={{ __html: setAuthDataToCookie }} />
     <script dangerouslySetInnerHTML={{ __html: inlineThemeCode }} />
   </>
 ));

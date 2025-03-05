@@ -44,6 +44,7 @@ interface ChatProps {
 }
 
 export function Chat({ initialLoadedFiles }: { initialLoadedFiles?: { [path: string]: { content: string } } | null }) {
+  
   renderLogger.trace('Chat');
 
   const { ready, initialMessages, storeMessageHistory, importChat, exportChat } = useChatHistory();
@@ -62,9 +63,16 @@ export function Chat({ initialLoadedFiles }: { initialLoadedFiles?: { [path: str
       };
       
       // Add the message to the chat history
-      storeMessageHistory([...initialMessages, artifactMessage]).catch((error) => {
+      storeMessageHistory([...initialMessages, artifactMessage])
+      .then(() => {
+        // Reload to show file in chat message
+        location.reload();
+      })
+      .catch((error) => {
         console.error('Error storing URL loaded files:', error);
       });
+      
+
     }
   }, [initialMessages, initialLoadedFiles]);
 
@@ -158,7 +166,7 @@ export const ChatImpl = memo(
       data: chatData,
       setData,
     } = useChat({
-      api: '/api/chat',
+      api: '/virutosoconductornet/bolt/api/chat',
       body: {
         apiKeys,
         files,

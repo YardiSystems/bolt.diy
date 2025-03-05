@@ -123,11 +123,17 @@ ${files[filePath].content}
 export interface UrlFileLoadConfig {
   fileLoadRoot: string;
   files: string[];
+  auth?: {
+    token: string,
+    role: string,
+    database: string
+  }
 }
 
 export const loadFilesFromUrls = async (config: UrlFileLoadConfig): Promise<{ [path: string]: { content: string } }> => {
+ 
   const files: { [path: string]: { content: string } } = {};
-
+ 
   await Promise.all(
     config.files.map(async (filePath) => {
       try {
@@ -136,26 +142,22 @@ export const loadFilesFromUrls = async (config: UrlFileLoadConfig): Promise<{ [p
         const token = (window.localStorage.getItem("ls.ls.authorizationData") as any).token;
 
         const url = new URL(filePath, config.fileLoadRoot).toString();
-        const headers = new Headers({
-          'Content-Type': 'application/json'
-        });
-
-        if(token) {
-          headers.append('Authorization', 'Bearer ' + token);
+        
+        let response;
+        if (url.includes('/virutosoconductornet/boltapi/')) {
+          // Get data from yardi api
+          response = await fetch(url, {
+            headers: {
+              'Authorization': `Bearer ${config.auth.token}`,
+              'Role': config.auth.role,
+              'Database': config.auth.database
+            }
+          });          
+        } else {
+          // Do normal fetch
+          response = await fetch(url);
         }
-
-        if (role) {
-          headers.append('role', role);
-        }
-
-        if (database) {
-          headers.append('database', database);
-        }
-
-        const response = await fetch(url, {
-          headers: headers,
-        });
-
+        
         if (!response.ok) {
           throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
         }
