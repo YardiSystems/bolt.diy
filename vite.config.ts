@@ -73,7 +73,7 @@ const gitInfo = getGitInfo();
 
 export default defineConfig((config) => {
   return {
-    base: '/virutosoconductornet/bolt/',
+    base: process.env.BASE_URL || '/',
     define: {
       __COMMIT_HASH: JSON.stringify(gitInfo.commitHash),
       __GIT_BRANCH: JSON.stringify(gitInfo.branch),
@@ -94,13 +94,15 @@ export default defineConfig((config) => {
     build: {
       target: 'esnext',
     },
+    server: {
+      allowedHosts: ['cmqacore.elevatelocal.com']
+    },
     plugins: [
       nodePolyfills({
         include: ['path', 'buffer', 'process'],
       }),
       config.mode !== 'test' && remixCloudflareDevProxy(),
       remixVitePlugin({
-        basename: '/virutosoconductornet/bolt/',
         future: {
           v3_fetcherPersist: true,
           v3_relativeSplatPath: true,

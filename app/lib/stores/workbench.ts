@@ -18,6 +18,7 @@ import { description } from '~/lib/persistence';
 import Cookies from 'js-cookie';
 import { createSampler } from '~/utils/sampler';
 import type { ActionAlert } from '~/types/actions';
+import { getAuthDataFromLocalStroage } from '../api/clientStorages';
 
 const { saveAs } = fileSaver;
 
@@ -412,7 +413,7 @@ export class WorkbenchStore {
     console.log("Sync file")
     const files = this.files.get();
     const syncedFiles = [];
-    const fileSaveRoot = import.meta.env.VITE_FILESAVEROOT;
+    const fileSaveRoot = window.location.protocol + '://' + window.location.host + import.meta.env.VITE_FILESAVEROOT;
 
     if (!fileSaveRoot) {
       throw new Error('FILESAVEROOT environment variable is not set. Make sure it is prefixed with VITE_ in your .env file.');
@@ -425,26 +426,20 @@ export class WorkbenchStore {
         try {
           let headers = new Headers({
             'Content-Type': 'application/json'
-          });
-  
+          });  
           
-          const role = window.localStorage.getItem("ls.role") || undefined;
-          const database = window.localStorage.getItem("ls.database") || undefined;
-          const authDataStr = window.localStorage.getItem("ls.authorizationData");
-          if (authDataStr) {
-            const authData = JSON.parse(authDataStr)
-            const token = authData.token;
-            if(token) {
-              headers.append('Authorization', 'Bearer ' + token);
-            }
+          const authData = getAuthDataFromLocalStroage();
+          
+          if(authData.token) {
+            headers.append('Authorization', 'Bearer ' + authData.token);
           }
 
-          if (role) {
-            headers.append('role', JSON.parse(role));
+          if (authData.role) {
+            headers.append('role', authData.role);
           }
   
-          if (database) {
-            headers.append('database', JSON.parse(database));
+          if (authData.database) {
+            headers.append('database', authData.database);
           }          
           
           const response = await fetch(fileSaveRoot, {

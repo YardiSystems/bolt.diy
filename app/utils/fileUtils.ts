@@ -140,7 +140,7 @@ export const loadFilesFromUrls = async (config: UrlFileLoadConfig): Promise<{ [p
         const url = new URL(filePath, config.fileLoadRoot).toString();
         
         let response;
-        if (url.includes('/virutosoconductornet/boltapi/')) {
+        if (url.includes('api/')) {
           
           // Get data from yardi api  
           const headers = new Headers({

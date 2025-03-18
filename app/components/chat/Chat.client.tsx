@@ -166,7 +166,7 @@ export const ChatImpl = memo(
       data: chatData,
       setData,
     } = useChat({
-      api: '/virutosoconductornet/bolt/api/chat',
+      api: import.meta.env.BASE_URL + 'api/chat',
       body: {
         apiKeys,
         files,

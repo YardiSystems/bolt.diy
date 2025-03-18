@@ -16,7 +16,7 @@ export const meta: MetaFunction = () => {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const files = url.searchParams.get('files')?.split(',').filter(Boolean);
-  const fileLoadRoot = process.env.FILELOADROOT;
+  const fileLoadRoot = url.protocol + '://' + url.host + process.env.FILELOADROOT;
 
   const cookieHeader = request.headers.get("Cookie");
   const cookie = parseCookies(cookieHeader);

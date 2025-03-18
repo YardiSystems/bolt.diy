@@ -49,7 +49,7 @@ export function HistoryItem({ item, onDelete, onDuplicate, exportChat }: History
           />
         </form>
       ) : (
-        <a href={`/virutosoconductornet/bolt/chat/${item.urlId}`} className="flex w-full relative truncate block">
+        <a href={`${import.meta.env.BASE_URL}chat/${item.urlId}`} className="flex w-full relative truncate block">
           <WithTooltip tooltip={currentDescription}>
             <span className="truncate pr-24">{currentDescription}</span>
           </WithTooltip>

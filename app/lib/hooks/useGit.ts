@@ -70,7 +70,7 @@ export function useGit() {
           url,
           depth: 1,
           singleBranch: true,
-          corsProxy: '/virutosoconductornet/bolt/api/git-proxy',
+          corsProxy: import.meta.env.BASE_URL + 'api/git-proxy',
           headers,
 
           onAuth: (url) => {

@@ -33,7 +33,7 @@ export function usePromptEnhancer() {
       requestBody.apiKeys = apiKeys;
     }
 
-    const response = await fetch('/virutosoconductornet/bolt/api/enhancer', {
+    const response = await fetch(import.meta.env.BASE_URL + 'api/enhancer', {
       method: 'POST',
       body: JSON.stringify(requestBody),
     });
