@@ -108,14 +108,14 @@ export const filesToArtifacts = (files: { [path: string]: { content: string } },
   return `
 <boltArtifact id="${id}" title="User Updated Files">
 ${Object.keys(files)
-  .map(
-    (filePath) => `
+      .map(
+        (filePath) => `
 <boltAction type="file" filePath="${filePath}">
 ${files[filePath].content}
 </boltAction>
 `,
-  )
-  .join('\n')}
+      )
+      .join('\n')}
 </boltArtifact>
   `;
 };
@@ -140,15 +140,29 @@ export const loadFilesFromUrls = async (config: UrlFileLoadConfig): Promise<{ [p
         const url = new URL(filePath, config.fileLoadRoot).toString();
         
         let response;
-        if (url.includes('/virutosoconductornet/boltapi/')) {
-          // Get data from yardi api
+        if (url.includes('api/')) {
+          
+          // Get data from yardi api  
+          const headers = new Headers({
+            'Content-Type': 'application/json'
+          });
+  
+          if (config.auth?.token) {
+            headers.append('Authorization', 'Bearer ' + config.auth?.token);
+          }
+
+          if (config.auth?.role) {
+            headers.append('role', config.auth?.role);
+          }
+  
+          if (config.auth?.database) {
+            headers.append('database', config.auth?.database);
+          }
+  
           response = await fetch(url, {
-            headers: {
-              'Authorization': `Bearer ${config.auth.token}`,
-              'Role': config.auth.role,
-              'Database': config.auth.database
-            }
-          });          
+            headers: headers,
+          });
+  
         } else {
           // Do normal fetch
           response = await fetch(url);
