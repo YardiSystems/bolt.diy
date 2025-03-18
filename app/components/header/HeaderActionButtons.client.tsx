@@ -118,7 +118,7 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
       const existingSiteId = localStorage.getItem(`netlify-site-${currentChatId}`);
 
       // Deploy using the API route with file contents
-      const response = await fetch('/virutosoconductornet/bolt/api/deploy', {
+      const response = await fetch(import.meta.env.BASE_URL + 'api/deploy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

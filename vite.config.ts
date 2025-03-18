@@ -73,7 +73,7 @@ const gitInfo = getGitInfo();
 
 export default defineConfig((config) => {
   return {
-    base: '/virutosoconductornet/bolt/',
+    base: process.env.BASE_URL || '/',
     define: {
       __COMMIT_HASH: JSON.stringify(gitInfo.commitHash),
       __GIT_BRANCH: JSON.stringify(gitInfo.branch),

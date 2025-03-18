@@ -307,7 +307,7 @@ export default function DebugTab() {
     // Initial fetch
     const fetchGitInfo = async () => {
       try {
-        const response = await fetch('/virutosoconductornet/bolt/api/system/git-info');
+        const response = await fetch(import.meta.env.BASE_URL + 'api/system/git-info');
         const updatedGitInfo = (await response.json()) as GitInfo;
 
         setWebAppInfo((prev) => {
@@ -488,8 +488,8 @@ export default function DebugTab() {
       setLoading((prev) => ({ ...prev, webAppInfo: true }));
 
       const [appResponse, gitResponse] = await Promise.all([
-        fetch('/virutosoconductornet/bolt/api/system/app-info'),
-        fetch('/virutosoconductornet/bolt/api/system/git-info'),
+        fetch(import.meta.env.BASE_URL + 'api/system/app-info'),
+        fetch(import.meta.env.BASE_URL + 'api/system/git-info'),
       ]);
 
       if (!appResponse.ok || !gitResponse.ok) {

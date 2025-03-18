@@ -19,7 +19,7 @@ export const checkConnection = async (): Promise<ConnectionStatus> => {
 
     // Try multiple endpoints in case one fails
     const endpoints = [
-      '/virutosoconductornet/bolt/api/health',
+      import.meta.env.BASE_URL + 'api/health',
       '/', // Fallback to root route
       '/favicon.ico', // Another common fallback
     ];
