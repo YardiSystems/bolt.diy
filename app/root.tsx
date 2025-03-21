@@ -75,8 +75,8 @@ const setAuthDataToCookie = stripIndents`
       return null;
   }
 
-  const token = getCookie('yardi_token');
-  if (!token) {
+  // const token = getCookie('yardi_token');
+  // if (!token) {
     const authDataStr = localStorage.getItem('ls.authorizationData');
 
     if (authDataStr) {
@@ -93,8 +93,8 @@ const setAuthDataToCookie = stripIndents`
         setCookie('yardi_database', JSON.parse(databaseStr));
       }
 
-      location.reload();
-    }
+      // location.reload();
+    // }
   }
 `;
 
