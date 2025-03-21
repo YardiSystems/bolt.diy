@@ -103,6 +103,7 @@ export default defineConfig((config) => {
       }),
       config.mode !== 'test' && remixCloudflareDevProxy(),
       remixVitePlugin({
+        basename: process.env.BASE_URL || '/',
         future: {
           v3_fetcherPersist: true,
           v3_relativeSplatPath: true,
