@@ -95,7 +95,7 @@ export default defineConfig((config) => {
       target: 'esnext',
     },
     server: {
-      allowedHosts: ['cmqacore.elevatelocal.com']
+      allowedHosts: ['.elevatedev.cafe', '.elevateqa.cafe', '.elevate.cafe', '.elevatelocal.com']
     },
     plugins: [
       nodePolyfills({
