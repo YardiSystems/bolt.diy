@@ -19,7 +19,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   
   // Get the original host name from headers
   const originalHost = request.headers.get("X-Forwarded-Host") || request.headers.get("Host") || url.host;
-  const protocol = request.headers.get("X-Forwarded-Proto") || url.protocol;
+  const protocol = process.env.HTTP_PROTOCOL || request.headers.get("X-Forwarded-Proto") || url.protocol;
   const fileLoadRoot = protocol + '//' + originalHost + process.env.FILELOADROOT;
 
   console.log("fileLoadRoot", fileLoadRoot);
