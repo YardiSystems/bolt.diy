@@ -141,28 +141,37 @@ export const loadFilesFromUrls = async (config: UrlFileLoadConfig): Promise<{ [p
         
         let response;
         if (url.includes('api/')) {
-          
           // Get data from yardi api  
           const headers = new Headers({
             'Content-Type': 'application/json'
           });
   
           if (config.auth?.token) {
-            headers.append('Authorization', 'Bearer ' + config.auth?.token);
+            headers.append('Authorization', `Bearer ${config.auth.token}`);
+          } else {
+            console.error('Missing authentication token for API request');
+            throw new Error('Authentication token is required for API requests');
           }
 
           if (config.auth?.role) {
-            headers.append('role', config.auth?.role);
+            headers.append('role', config.auth.role);
           }
   
           if (config.auth?.database) {
-            headers.append('database', config.auth?.database);
+            headers.append('database', config.auth.database);
           }
   
+          console.log('Making API request with headers:', Object.fromEntries(headers.entries()));
           response = await fetch(url, {
             headers: headers,
+            credentials: 'include'
           });
   
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`API request failed: ${response.status} ${response.statusText}`, errorText);
+            throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+          }
         } else {
           // Do normal fetch
           response = await fetch(url);
@@ -176,6 +185,7 @@ export const loadFilesFromUrls = async (config: UrlFileLoadConfig): Promise<{ [p
         files[filePath] = { content };
       } catch (error) {
         console.error(`Error loading file ${filePath}:`, error);
+        throw error; // Re-throw the error to handle it in the calling code
       }
     })
   );

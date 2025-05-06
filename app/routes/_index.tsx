@@ -25,7 +25,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   console.log("fileLoadRoot", fileLoadRoot);
 
   const cookieHeader = request.headers.get("Cookie");
+  console.log("Raw cookie header:", cookieHeader);
   const cookie = parseCookies(cookieHeader);
+  console.log("Parsed cookies:", cookie);
 
   if (fileLoadRoot && files?.length) {
     const config: UrlFileLoadConfig = {
@@ -37,6 +39,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         database: cookie.yardi_database
       }
     };
+
+    console.log("Auth config:", {
+      hasToken: Boolean(config.auth?.token),
+      hasRole: Boolean(config.auth?.role),
+      hasDatabase: Boolean(config.auth?.database)
+    });
 
     try {
       const loadedFiles = await loadFilesFromUrls(config);
