@@ -16,7 +16,13 @@ export const meta: MetaFunction = () => {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const files = url.searchParams.get('files')?.split(',').filter(Boolean);
-  const fileLoadRoot = url.protocol + '//' + url.host + process.env.FILELOADROOT;
+  
+  // Get the original host name from headers
+  const originalHost = request.headers.get("X-Forwarded-Host") || request.headers.get("Host") || url.host;
+  const protocol = request.headers.get("X-Forwarded-Proto") || url.protocol;
+  const fileLoadRoot = protocol + '//' + originalHost + process.env.FILELOADROOT;
+
+  console.log("fileLoadRoot", fileLoadRoot);
 
   const cookieHeader = request.headers.get("Cookie");
   const cookie = parseCookies(cookieHeader);

@@ -413,7 +413,7 @@ export class WorkbenchStore {
     console.log("Sync file")
     const files = this.files.get();
     const syncedFiles = [];
-    const fileSaveRoot = window.location.protocol + '//' + window.location.host + import.meta.env.VITE_FILESAVEROOT;
+    const fileSaveRoot = window.location.protocol + '//' + window.location.host + (window.location.port ? ':' + window.location.port : '') + import.meta.env.VITE_FILESAVEROOT;
 
     if (!fileSaveRoot) {
       throw new Error('FILESAVEROOT environment variable is not set. Make sure it is prefixed with VITE_ in your .env file.');
